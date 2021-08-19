@@ -1,0 +1,13 @@
+<div class="home-wrapper" [class.not-empty]="!!searchValue">
+  <div class="search-form">
+    <input type="text" #searchInput
+           class="form-control" [class.not-empty]="!!searchValue"
+           placeholder="Enter the name of the movie you like..."
+           [ngModel]="searchValue" (keyup.enter)="searchValue = searchInput.value ?? ''">
+    <button class="btn btn-primary search-form-btn" (click)="searchValue = searchInput.value ?? ''">Search</button>
+  </div>
+  <div class="content">
+    <span class="err-message" *ngIf="searchValue && movies.length === 0">No result for <b>{{searchValue}}</b></span>
+    <span class="err-message" *ngIf="searchValue && movies.length > 0">{{totalResults}} movies found with title <b>{{searchValue}}</b></span>
+  </div>
+</div>
