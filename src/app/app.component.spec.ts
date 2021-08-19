@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'movies-csv'`, () => {
+  it(`should have as title 'movie-csv'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('movies-csv');
+    expect(app.title).toEqual('movie-csv');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('movies-csv app is running!');
+    expect(compiled.querySelector('.content span')?.textContent).toContain('movie-csv app is running!');
   });
 });
