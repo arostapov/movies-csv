@@ -11,8 +11,9 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   public findTheMovies(searchText: string): Observable<Movies> {
-    let page = 2;
-    return this.findTheMovie(searchText, 1)
+    const limit = 10;
+    let page = 1;
+    return this.findTheMovie(searchText)
       .pipe(
         map(data => {
           if (data?.totalResults) {
@@ -22,7 +23,7 @@ export class SearchService {
           return data;
         }),
         expand((data: Movies) => {
-          return page <= parseInt((data.totalResults / data.Search.length).toFixed()) ? this.findTheMovie(searchText, page++) : empty();
+          return page * limit <= data.totalResults ? this.findTheMovie(searchText, ++page) : empty();
         }),
         reduce(((acc, value) => {
           acc.Search = acc.Search.concat(value.Search);
