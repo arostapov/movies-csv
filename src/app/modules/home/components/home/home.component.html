@@ -7,7 +7,7 @@
     <button class="btn btn-primary search-form-btn" (click)="searchValue = searchInput.value ?? ''">Search</button>
   </div>
   <div class="content">
-    <span class="err-message" *ngIf="searchValue && movies.length === 0">No result for <b>{{searchValue}}</b></span>
-    <span class="err-message" *ngIf="searchValue && movies.length > 0">{{totalResults}} movies found with title <b>{{searchValue}}</b></span>
+    <span *ngIf="searchValue && !success">No result for <b>{{searchValue}}</b></span>
+    <span *ngIf="searchValue && success && movies.length > 0">{{totalResults}} movies found with title <b>{{searchValue}}</b></span>
   </div>
 </div>

@@ -4,6 +4,8 @@ import { empty, Observable} from "rxjs";
 import { environment } from "../../../../environments/environment";
 import { Movies } from "../../../core/models/movies.model";
 import { expand, map, reduce } from "rxjs/operators";
+import { Movie } from "../../../core/models/movie.model";
+import { saveAs } from "file-saver";
 
 @Injectable()
 export class SearchService {
@@ -16,14 +18,14 @@ export class SearchService {
     return this.findTheMovie(searchText)
       .pipe(
         map(data => {
-          if (data?.totalResults) {
+          if (+data?.totalResults) {
             return data;
           }
           data.totalResults = 0;
           return data;
         }),
         expand((data: Movies) => {
-          return page * limit <= data.totalResults ? this.findTheMovie(searchText, ++page) : empty();
+          return page * limit <= +data.totalResults ? this.findTheMovie(searchText, ++page) : empty();
         }),
         reduce(((acc, value) => {
           acc.Search = acc.Search.concat(value.Search);
@@ -41,5 +43,14 @@ export class SearchService {
         .append('page', page),
     };
     return this.http.get<Movies>(`${environment.apiUrl}`, options);
+  }
+
+  public saveMovies(movies: Array<Movie>, fileName: string = 'movies'): void {
+    const csv = movies.map(movie => {
+      return `${JSON.stringify(movie.Title)};${JSON.stringify(movie.Year)};${JSON.stringify(movie.Type)}`;
+    }).join('\r\n');
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    saveAs(blob, `${fileName.replace(/\s/g, '_')}.csv`);
   }
 }

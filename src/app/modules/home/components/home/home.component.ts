@@ -5,7 +5,6 @@ import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {filter, takeUntil, tap} from "rxjs/operators";
 import {HomeQueryParams} from "../../../../core/models/home-query-params.model";
 import {Movie} from "../../../../core/models/movie.model";
-import {saveAs} from 'file-saver';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +17,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public movies: Array<Movie> = [];
   public totalResults: number = 0;
+  public success: boolean = true;
   constructor(private readonly searchService: SearchService,
               private readonly route: ActivatedRoute,
               private readonly router: Router) { }
@@ -73,14 +73,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       .pipe(tap(result => console.log(result)))
       .subscribe(result => {
         this.movies = result?.Search ?? [];
-        this.totalResults = result?.totalResults ?? 0;
+        this.totalResults = +result?.totalResults ?? 0;
+        this.success = result.Response === 'True';
 
-        const csv = this.movies.map(movie => {
-          return `${JSON.stringify(movie.Title)};${JSON.stringify(movie.Year)};${JSON.stringify(movie.Type)}`;
-        }).join('\r\n');
-
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, `${this.searchValue.replace(' ', '_')}.csv`);
+        if (this.success) {
+          this.searchService.saveMovies(this.movies, this.searchValue);
+        }
 
         this.router.navigate([], { queryParams: { search: this.encodedSearchValue } });
       });
@@ -89,6 +87,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private resetMovies(): void {
     this.movies = [];
     this.totalResults = 0;
+    this.success = true;
     this.router.navigate([], { queryParams: { search: '' } });
   }
 }
